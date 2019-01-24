@@ -1,0 +1,38 @@
+/* 
+
+   Copyright 1994, 1995, 1996, 1997, 1998, 1999  by Bernie Roehl 
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA,
+   02111-1307, USA.
+
+   For more information, contact Bernie Roehl <broehl@uwaterloo.ca> 
+   or at Bernie Roehl, 68 Margaret Avenue North, Waterloo, Ontario, 
+   N2J 3P7, Canada
+
+*/
+#include <stdio.h>
+
+void main(void)
+	{
+	int i;
+	char *p, buff[100];
+	for (i = 0; gets(buff); ++i)
+		{
+		printf("static unsigned char m_%d[] =\n\t{", i);
+		for (p = buff; *p; ++p)
+			printf(" 0x%02.2X,", *p | 0x80);
+		printf(" 0 };\n\n");
+		}
+	}

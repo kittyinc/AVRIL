@@ -1,0 +1,51 @@
+/* 
+
+   Copyright 1994, 1995, 1996, 1997, 1998, 1999  by Bernie Roehl 
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA,
+   02111-1307, USA.
+
+   For more information, contact Bernie Roehl <broehl@uwaterloo.ca> 
+   or at Bernie Roehl, 68 Margaret Avenue North, Waterloo, Ontario, 
+   N2J 3P7, Canada
+
+*/
+#include "avril.h"
+#include <stdlib.h>
+
+void main(int argc, char *argv[])
+	{
+	int i;
+	vrl_SystemStartup();
+	vrl_ReadCFGfile(getenv("AVRIL"));
+	vrl_SystemCommandLine(argc, argv);
+	vrl_RenderSetAmbient(vrl_WorldGetAmbient());
+	vrl_DisplayStereoSetDrawEye(VRL_STEREOEYE_BOTH);
+	vrl_VideoCursorHide();
+	for (i = 0; i < 500; ++i)
+		{
+		vrl_Object *list = vrl_WorldUpdate();
+		int pagenum = vrl_VideoGetDrawPage();
+		if (++pagenum >= vrl_VideoGetNpages()) pagenum = 0;
+		vrl_VideoSetDrawPage(pagenum);
+		vrl_DisplayBeginFrame();
+		vrl_DisplayClear(vrl_WorldGetSkyColor());
+		vrl_RenderBegin(vrl_WorldGetCamera(), vrl_WorldGetLights());
+		vrl_RenderObjlist(list);
+		vrl_DisplayEndFrame();
+		vrl_DisplayUpdate();
+		vrl_VideoSetViewPage(pagenum);
+		}
+	}

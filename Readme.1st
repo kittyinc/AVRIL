@@ -1,0 +1,27 @@
+Hello, everyone.
+
+As many of you know, I stopped working on AVRIL several years ago in order
+to focus on VRML (and, more recently, Java3D).  Martin Giguere suggested
+making the code for AVRIL available under the GPL, and I'm happy to do so.
+
+Please note:
+
+  * I haven't looked at this code in years, so I really can't offer any
+    kind of support.  I also have very limited time in which to answer
+    email, since I have a lot of projects on the go.  However, the
+    comments in the code are fairly clear.
+
+  * The code is only known to compile under Borland C 3.1, but it
+    should be possible to port it to other compilers fairly easily.
+
+  * AVRIL is a DOS program.  Porting it to Windows, or to other
+    platforms, is theoretically possible.
+
+Please keep me informed of any improvements you make to the code, and
+if you do manage to port the code please let me know.
+
+I hope you find AVRIL useful in your projects.
+
+                                 -- Bernie Roehl
+                                    March 1999
+

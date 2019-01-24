@@ -1,0 +1,35 @@
+# AVRIL Makefile (using Watcom C 10.0)
+#
+# Written by Bernie Roehl, January 1995
+#
+
+FLAT = 1
+DEBUGGER = 1
+
+!ifdef DEBUGGER
+CDEBUG = -d2
+LDEBUG = debug all
+NOVFLAGS =
+!endif
+
+!ifdef FLAT
+CC = wcc386
+LINK = wlink system dos4g
+!else
+CC = wcc -ml
+LINK = wlink
+!endif
+LIBRARIAN = wlib
+OBJ = .obj
+LIB = .lib
+EXE = .exe
+
+CFLAGS = $(CDEBUG)
+CDRFLAGS = $(CDEBUG)
+CAUTIOUSFLAGS = $(CDEBUG)
+NO386 =
+LFLAGS = $(LDEBUG)
+
+# -ml is large model
+
+WATCOMPILER = 1

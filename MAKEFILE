@@ -1,0 +1,370 @@
+# Makefile for AVRIL (common for all compilers)
+#
+# Written by Bernie Roehl, March 1994
+#
+
+default: av$(EXE)
+
+# Non-compiling operations
+
+clean:
+	del *.bak
+	del *.map
+
+scratch: clean
+	del *.obj
+	del *.lib
+	
+backup:
+	pkzip zips/backup *.c *.h *.asm make*.* builtins.mak *.wp read.me asteroid.plg colorful.plg *.cfg *.pal
+
+distrib: avril20.zip
+
+avril20.zip: read.me av$(EXE) avril.cfg \
+	avril.h avrilkey.h avrildrv.h avril$(LIB) \
+	av.c example1.c example2.c example3.c \
+	example4.c example5.c example6.c example6.cfg \
+	example7.c shade32.pal example8.c \
+	system.c input.c cfg.c drvcyman.c packet.c vidsamp.c \
+	avriltut.ps avriltut.txt \
+	avrilref.ps avrilref.txt \
+	avrilapp.ps avrilapp.txt \
+	asteroid.plg colorful.plg sample.zip
+	del avril20.zip
+	pkzip avril20 read.me av$(EXE) avril.cfg
+	pkzip avril20 avril.h avrilkey.h avrildrv.h avril$(LIB)
+	pkzip avril20 av.c example1.c example2.c example3.c
+	pkzip avril20 example4.c example5.c example6.c example6.cfg
+	pkzip avril20 example7.c shade32.pal
+	pkzip avril20 system.c input.c cfg.c drvcyman.c packet.c vidsamp.c
+	pkzip avril20 avriltut.ps avriltut.txt
+	pkzip avril20 avrilref.ps avrilref.txt
+	pkzip avril20 avrilapp.ps avrilapp.txt
+	pkzip avril20 asteroid.plg colorful.plg sample.zip
+
+sample.zip:
+	pkzip -rP sample sample.wld sample/*.*
+
+# Actual code
+	
+# If -DVRL_USE_FIXED_POINT is used,
+# then *all* the modules should be compiled with that flag.
+
+vio$(EXE): vio$(OBJ) drvvio$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) vio$(OBJ) drvvio$(OBJ) $(LIBRARY) avril$(LIB)
+
+vio$(OBJ): vio.c avril.h
+	$(CC) $(CFLAGS) vio.c
+
+#default: boris$(EXE) animbldr$(EXE)
+
+all: av$(EXE) example1$(EXE) example2$(EXE) example3$(EXE) example4$(EXE) example5$(EXE) example6$(EXE) example7$(EXE) example8$(EXE)
+
+# Example programs
+
+example1$(EXE): example1$(OBJ) input$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) example1$(OBJ) input$(OBJ) $(LIBRARY) avril$(LIB)
+
+example1$(OBJ): example1.c avril.h
+	$(CC) $(CFLAGS) example1.c
+
+example2$(EXE): example2$(OBJ) input$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) example2$(OBJ) input$(OBJ) $(LIBRARY) avril$(LIB)
+
+example2$(OBJ): example2.c avril.h
+	$(CC) $(CFLAGS) example2.c
+
+example3$(EXE): example3$(OBJ) input$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) example3$(OBJ) input$(OBJ) $(LIBRARY) avril$(LIB)
+
+example3$(OBJ): example3.c avril.h
+	$(CC) $(CFLAGS) example3.c
+
+example4$(EXE): example4$(OBJ) input$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) example4$(OBJ) input$(OBJ) $(LIBRARY) avril$(LIB)
+
+example4$(OBJ): example4.c avril.h
+	$(CC) $(CFLAGS) example4.c
+
+example5$(EXE): example5$(OBJ) input$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) example5$(OBJ) input$(OBJ) $(LIBRARY) avril$(LIB)
+
+example5$(OBJ): example5.c avril.h avrildrv.h
+	$(CC) $(CFLAGS) example5.c
+
+example6$(EXE): example6$(OBJ) input$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) example6$(OBJ) input$(OBJ) $(LIBRARY) avril$(LIB)
+
+example6$(OBJ): example6.c avril.h
+	$(CC) $(CFLAGS) example6.c
+
+example7$(EXE): example7$(OBJ) input$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) example7$(OBJ) input$(OBJ) $(LIBRARY) avril$(LIB)
+
+example7$(OBJ): example7.c avril.h
+	$(CC) $(CFLAGS) example7.c
+
+example8$(EXE): example8$(OBJ) input$(OBJ) avril$(LIB)
+	$(LINK) $(LFLAGS) example8$(OBJ) input$(OBJ) $(LIBRARY) avril$(LIB)
+
+example8$(OBJ): example8.c avril.h
+	$(CC) $(CFLAGS) example8.c
+
+av$(EXE): av$(OBJ) input$(OBJ) avril$(LIB)
+!ifdef WATCOMPILER
+	$(LINK) $(LFLAGS) file av$(OBJ),input$(OBJ) library avril$(LIB)
+!else
+	$(LINK) $(LFLAGS) av$(OBJ) input$(OBJ) avril$(LIB)
+!endif
+
+av$(OBJ): av.c avril.h
+	$(CC) $(CFLAGS) av.c
+
+input$(OBJ): input.c avril.h avrilkey.h avrildrv.h
+	$(CC) $(CFLAGS) input.c
+
+#####   The AVRIL library itself
+
+avril$(LIB): pipeline$(OBJ) camlight$(OBJ) object$(OBJ) world$(OBJ) shape$(OBJ) \
+	surface$(OBJ) matrix$(OBJ) math$(OBJ) \
+	plg$(OBJ) fig$(OBJ) wld$(OBJ) pcx$(OBJ) prims$(OBJ) raster$(OBJ) \
+	system$(OBJ) cfg$(OBJ) userint$(OBJ) tasks$(OBJ) memory$(OBJ) \
+	device$(OBJ) packet$(OBJ) serial$(OBJ) keyboard$(OBJ) timer$(OBJ) mouse$(OBJ) \
+	drvcyman$(OBJ) drvjoy$(OBJ) drvmouse$(OBJ) drvgdc$(OBJ) drvkey$(OBJ) drvctm$(OBJ) drvwand$(OBJ) \
+	drvredb$(OBJ) drvsball$(OBJ) drviso$(OBJ) drvpad$(OBJ) drv5dt$(OBJ) abus$(OBJ) \
+	drvvio$(OBJ) drv7th$(OBJ) \
+	drawover$(OBJ) drawunde$(OBJ) applic$(OBJ) appkey$(OBJ) appmouse$(OBJ) wldfeat$(OBJ) \
+	palette$(OBJ) display$(OBJ) stereo$(OBJ) xyclip$(OBJ) \
+	scan$(OBJ) scan_y$(OBJ) chartabl$(OBJ) \
+	video_13$(OBJ) video_y$(OBJ) video_ss$(OBJ) ntsc$(OBJ)
+	$(LIBRARIAN) avril -+pipeline -+camlight -+object -+world -+shape
+	$(LIBRARIAN) avril -+surface -+matrix -+math
+	$(LIBRARIAN) avril -+plg -+fig -+wld -+pcx -+prims -+raster -+memory
+	$(LIBRARIAN) avril -+system -+cfg -+userint -+tasks
+	$(LIBRARIAN) avril -+device -+packet -+serial -+keyboard -+timer -+mouse
+	$(LIBRARIAN) avril -+drvcyman -+drvwand -+drvjoy -+drvmouse -+drvgdc -+drvkey -+drvctm -+drv5dt -+abus
+	$(LIBRARIAN) avril -+drvredb -+drvsball -+drviso -+drvpad -+drvvio -+drv7th
+	$(LIBRARIAN) avril -+drawover -+drawunde -+applic -+appkey -+appmouse -+wldfeat
+	$(LIBRARIAN) avril -+palette -+display -+stereo -+xyclip -+scan -+scan_y -+chartabl
+	$(LIBRARIAN) avril -+video_13 -+video_y -+video_ss -+ntsc
+
+pipeline$(OBJ): pipeline.c avril.h vops.h vrlstats.h
+	$(CC) $(CFLAGS) pipeline.c
+
+camlight$(OBJ): camlight.c avril.h
+	$(CC) $(CFLAGS) camlight.c
+
+object$(OBJ): object.c avril.h
+	$(CC) $(CFLAGS) object.c
+
+world$(OBJ): world.c avril.h
+	$(CC) $(CFLAGS) world.c
+
+shape$(OBJ): shape.c avril.h
+	$(CC) $(CFLAGS) shape.c
+
+surface$(OBJ): surface.c avril.h
+	$(CC) $(CFLAGS) surface.c
+
+matrix$(OBJ): matrix.c avril.h
+	$(CC) $(CFLAGS) matrix.c
+
+math$(OBJ): math.c avril.h
+	$(CC) $(CFLAGS) $(NOVFLAGS) math.c
+
+plg$(OBJ): plg.c avril.h
+	$(CC) $(CFLAGS) plg.c
+
+fig$(OBJ): fig.c avril.h
+	$(CC) $(CFLAGS) fig.c
+
+wld$(OBJ): wld.c avril.h
+	$(CC) $(CFLAGS) wld.c
+
+pcx$(OBJ): pcx.c avril.h
+	$(CC) $(CFLAGS) pcx.c
+
+prims$(OBJ): prims.c avril.h
+	$(CC) $(CFLAGS) prims.c
+
+raster$(OBJ): raster.c avril.h
+	$(CC) $(CFLAGS) raster.c
+
+memory$(OBJ): memory.c avril.h
+	$(CC) $(CFLAGS) memory.c
+
+system$(OBJ): system.c avril.h
+	$(CC) $(CFLAGS) system.c
+
+userint$(OBJ): userint.c avril.h
+	$(CC) $(CFLAGS) userint.c
+
+tasks$(OBJ): tasks.c avril.h
+	$(CC) $(CFLAGS) tasks.c
+
+device$(OBJ): device.c avril.h
+	$(CC) $(CFLAGS) device.c
+
+packet$(OBJ): packet.c avril.h
+	$(CC) $(CFLAGS) packet.c
+
+display$(OBJ): display.c avril.h palettes.h
+	$(CC) $(CFLAGS) $(NO386) display.c
+
+palette$(OBJ): palette.c avril.h palettes.h
+	$(CC) $(CFLAGS) palette.c
+
+stereo$(OBJ): stereo.c avril.h
+	$(CC) $(CFLAGS) stereo.c
+
+xyclip$(OBJ): xyclip.c avril.h
+	$(CC) $(CFLAGS) xyclip.c
+
+cfg$(OBJ): cfg.c avril.h avrildrv.h
+	$(CC) $(CFLAGS) cfg.c
+
+# Stubs
+
+drawover$(OBJ): drawover.c
+	$(CC) $(CFLAGS) drawover.c
+
+drawunde$(OBJ): drawunde.c
+	$(CC) $(CFLAGS) drawunde.c
+
+applic$(OBJ): applic.c avril.h avrildrv.h
+	$(CC) $(CFLAGS) applic.c
+
+appkey$(OBJ): appkey.c avril.h avrilkey.h
+	$(CC) $(CFLAGS) appkey.c
+
+appmouse$(OBJ): appmouse.c avril.h
+	$(CC) $(CFLAGS) appmouse.c
+
+wldfeat$(OBJ): wldfeat.c avril.h
+	$(CC) $(CFLAGS) wldfeat.c
+
+# display drivers
+
+scan$(OBJ): scan.c avril.h fill_13.c
+	$(CC) $(CFLAGS) scan.c
+
+!ifdef WATCOMPILER
+scan_y$(OBJ): scan.c avril.h fill_y.c compat.h
+	$(CC) $(CFLAGS) -DMODE_Y -nm=scan_y -fo=scan_y$(OBJ) scan.c
+!else
+scan_y$(OBJ): scan.c avril.h fill_y.c compat.h
+	$(CC) $(CFLAGS) -DMODE_Y -oscan_y$(OBJ) scan.c
+!endif
+
+chartabl$(OBJ): chartabl.c
+	$(CC) $(CFLAGS) chartabl.c
+
+# Video drivers
+
+video_13$(OBJ): video_13.c avril.h compat.h
+	$(CC) $(CFLAGS) video_13.c
+
+video_y$(OBJ): video_y.c avril.h compat.h
+	$(CC) $(CFLAGS) video_y.c
+
+video_ss$(OBJ): video_ss.c avril.h compat.h
+	$(CC) $(CFLAGS) video_ss.c
+
+ntsc$(OBJ): ntsc.c cyberdrv.h
+	$(CC) $(CFLAGS) ntsc.c
+
+# Platform-specific modules
+
+keyboard$(OBJ): keyboard.c avril.h avrilkey.h
+	$(CC) $(CFLAGS) keyboard.c
+
+mouse$(OBJ): mouse.c avril.h compat.h
+	$(CC) $(CFLAGS) mouse.c
+
+serial$(OBJ): serial.c avril.h
+	$(CC) $(CFLAGS) $(NO386) serial.c
+
+timer$(OBJ): timer.c avril.h
+	$(CC) $(CAUTIOUSFLAGS) -v timer.c
+
+# Device Drivers
+
+drvmouse$(OBJ): drvmouse.c avril.h
+	$(CC) $(CDRFLAGS) drvmouse.c
+
+drvgdc$(OBJ): drvgdc.c avril.h
+	$(CC) $(CDRFLAGS) $(NO386) drvgdc.c
+
+drvcyman$(OBJ): drvcyman.c avril.h
+	$(CC) $(CDRFLAGS) drvcyman.c
+
+drvctm$(OBJ): drvctm.c avril.h
+	$(CC) $(CDRFLAGS) drvctm.c
+
+drvredb$(OBJ): drvredb.c avril.h
+	$(CC) $(CDRFLAGS) drvredb.c
+
+drvsball$(OBJ): drvsball.c avril.h
+	$(CC) $(CDRFLAGS) $(NO386) drvsball.c
+
+drviso$(OBJ): drviso.c avril.h
+	$(CC) $(CDRFLAGS) $(NO386) drviso.c
+
+drvvio$(OBJ): drvvio.c avril.h
+	$(CC) $(CDRFLAGS) $(NO386) drvvio.c
+
+# These next few are PC-specific
+
+drvkey$(OBJ): drvkey.c avril.h
+	$(CC) $(CDRFLAGS) $(NO386) drvkey.c
+
+drvjoy$(OBJ): drvjoy.c avril.h
+	$(CC) $(CDRFLAGS) drvjoy.c
+
+drvwand$(OBJ): drvwand.c avril.h
+	$(CC) $(CDRFLAGS) drvwand.c
+
+drvpad$(OBJ): drvpad.c avril.h
+	$(CC) $(CDRFLAGS) $(NO386) drvpad.c
+
+drv5dt$(OBJ): drv5dt.c avril.h abus.h
+	$(CC) $(CDRFLAGS) drv5dt.c
+
+abus$(OBJ): abus.c abus.h compat.h
+	$(CC) $(CDRFLAGS) abus.c
+
+drv7th$(OBJ): drv7th.c avril.h
+	$(CC) $(CDRFLAGS) drv7th.c
+
+# Boris stuff
+
+boris$(EXE): boris$(OBJ) game$(OBJ) area$(OBJ) drvbutt$(OBJ) drvfake$(OBJ) avril$(LIB)
+	$(LINK) $(CFLAGS) boris$(OBJ) game$(OBJ) area$(OBJ) drvbutt$(OBJ) drvfake$(OBJ) $(LIBRARY) avril$(LIB)
+
+# Animation builder
+
+animbldr$(EXE): animbldr$(OBJ) avril$(LIB)
+	$(LINK) $(CFLAGS) animbldr$(OBJ) avril$(LIB)
+
+animbldr$(OBJ): animbldr.c avril.h avrilkey.h
+	$(CC) $(CFLAGS) animbldr.c
+
+# Game engine
+boris$(OBJ): boris.c avril.h area.h game.h
+	$(CC) $(CFLAGS) boris.c
+
+# Game logic
+game$(OBJ): game.c avril.h area.h game.h
+	$(CC) $(CFLAGS) game.c
+
+# Area-management routines
+area$(OBJ): area.c avril.h area.h game.h
+	$(CC) $(CFLAGS) area.c
+
+# Control device
+drvbutt$(OBJ): drvbutt.c avril.h
+	$(CC) $(CFLAGS) drvbutt.c
+
+# Fake "head tracker" using mouse
+drvfake$(OBJ): drvfake.c avril.h
+	$(CC) $(CFLAGS) drvfake.c
